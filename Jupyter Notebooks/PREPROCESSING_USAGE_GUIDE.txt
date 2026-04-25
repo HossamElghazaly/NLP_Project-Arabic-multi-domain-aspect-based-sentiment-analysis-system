@@ -1,0 +1,176 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║           ARABIC TEXT PREPROCESSING & EDA - USAGE GUIDE                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📌 QUICK START EXAMPLES:
+─────────────────────────────────────────────────────────────────────────────
+
+1️⃣  SIMPLE PREPROCESSING (Single Text):
+    ─────────────────────────────────────
+    from preprocess_arabic_text import preprocess_arabic_text
+    
+    text = "هذا نص تجريبي في اللغة العربية"
+    tokens = preprocess_arabic_text(text, remove_stopwords=True)
+    print(tokens)
+
+2️⃣  BATCH PROCESSING (Entire Dataset):
+    ────────────────────────────────────
+    preprocessor = ArabicTextPreprocessor(
+        remove_stopwords=True,
+        normalize=True,
+        remove_english=True
+    )
+    
+    processed = preprocessor.process_dataset(df, text_column='text')
+    stats = preprocessor.get_statistics()
+
+3️⃣  ABSA-SPECIFIC PREPROCESSING (Preserve Aspects):
+    ─────────────────────────────────────────────────
+    preprocessor_absa = ArabicTextPreprocessor(
+        remove_stopwords=False,  # Important: Keep all words!
+        normalize=True,
+        remove_english=True
+    )
+    
+    processed = preprocessor_absa.process_dataset(df)
+
+4️⃣  SENTIMENT ANALYSIS PREPROCESSING:
+    ───────────────────────────────────
+    preprocessor_sentiment = ArabicTextPreprocessor(
+        remove_stopwords=True,   # Focus on sentiment words
+        normalize=True,
+        remove_english=True
+    )
+    
+    processed = preprocessor_sentiment.process_dataset(df)
+
+─────────────────────────────────────────────────────────────────────────────
+
+🛠️  PREPROCESSING PIPELINE STAGES:
+─────────────────────────────────────────────────────────────────────────────
+
+Stage 1: Text Cleaning
+    ✓ Remove URLs (http://example.com)
+    ✓ Remove email addresses
+    ✓ Remove HTML tags (<p>, <div>, etc.)
+
+Stage 2: Arabic Normalization
+    ✓ Remove diacritics (تشكيل) - fatha, damma, kasra, etc.
+    ✓ Normalize Alef variations: أ, إ, آ → ا
+    ✓ Normalize Teh Marbuta: ة → ه
+    ✓ Normalize Ya variations: ى → ي
+    ✓ Remove Hamza (ء) and Tatweel (ـــ)
+
+Stage 3: Character Filtering
+    ✓ Keep only Arabic characters and spaces
+    ✓ Optionally remove English letters and numbers
+
+Stage 4: Text Normalization
+    ✓ Remove extra whitespaces
+    ✓ Strip leading/trailing whitespace
+
+Stage 5: Tokenization
+    ✓ Split by whitespace
+    ✓ Remove punctuation (، ؛ ؟ ! : « »)
+
+Stage 6: Stopword Removal (Optional)
+    ✓ Remove 1000+ common Arabic words
+    ✓ Custom stopwords can be added
+
+─────────────────────────────────────────────────────────────────────────────
+
+⚠️  IMPORTANT CONSIDERATIONS:
+─────────────────────────────────────────────────────────────────────────────
+
+🔴 FOR ABSA TASKS:
+    ⚠️  DO NOT remove stopwords - they provide context for aspects
+    ⚠️  Example: "الخدمة رائعة جداً" (The service is very great)
+        - "جداً" (very) is a stopword but crucial for intensity
+        - Removing it loses sentiment intensity information
+
+🟢 FOR SENTIMENT CLASSIFICATION:
+    ✓ Stopword removal is beneficial - focuses on sentiment words
+    ✓ Reduces noise and vocabulary size
+    ✓ Improves model training efficiency
+
+🟡 FOR MULTI-DOMAIN ANALYSIS:
+    ✓ Keep domain-specific terminology
+    ✓ Don't over-normalize (preserve business context)
+    ✓ Example: "بيتزا شهية" (delicious pizza) - "شهية" is common in food domain
+
+─────────────────────────────────────────────────────────────────────────────
+
+📊 EDA COMPONENTS INCLUDED:
+─────────────────────────────────────────────────────────────────────────────
+
+✓ Dataset Overview
+    - Total records, domains, columns, memory usage
+
+✓ Text Statistics
+    - Length distribution (characters and tokens)
+    - Min/Max/Mean/Median values
+
+✓ Sentiment Analysis
+    - Distribution across classes
+    - Class balance assessment
+    - Cross-domain sentiment patterns
+
+✓ Aspect Analysis
+    - Most common aspects
+    - Aspect-sentiment relationships
+    - Domain-specific aspects
+
+✓ Data Quality Metrics
+    - Completeness (missing values)
+    - Consistency (duplicates, empty records)
+    - Validity (value constraints)
+
+✓ Vocabulary Analysis
+    - Unique tokens and vocabulary size
+    - Type-Token Ratio (TTR)
+    - Rare words (hapax legomena)
+    - Frequency distribution (Zipf's law)
+
+─────────────────────────────────────────────────────────────────────────────
+
+💡 RECOMMENDED WORKFLOWS:
+─────────────────────────────────────────────────────────────────────────────
+
+Workflow 1: ABSA Training Data Preparation
+    1. Load raw datasets
+    2. Run EDA to understand data distribution
+    3. Check for class imbalance
+    4. Preprocess WITHOUT stopword removal
+    5. Create train/test splits
+    6. Export to model training format
+
+Workflow 2: Multi-Domain ABSA Analysis
+    1. Run domain-level EDA
+    2. Analyze domain-specific aspects
+    3. Check sentiment distribution per domain
+    4. Preprocess each domain separately if needed
+    5. Create domain-specific models or multi-domain ones
+
+Workflow 3: Data Quality Assessment
+    1. Run completeness checks
+    2. Identify and handle duplicates
+    3. Validate sentiment values
+    4. Assess text length distribution
+    5. Identify outliers (very short/long texts)
+
+─────────────────────────────────────────────────────────────────────────────
+
+🔍 NEXT STEPS FOR YOUR PROJECT:
+─────────────────────────────────────────────────────────────────────────────
+
+1. Run all EDA cells to understand your data
+2. Choose preprocessing strategy based on your task:
+   - ABSA: Keep all tokens, normalize, remove English
+   - Sentiment: Remove stopwords, normalize, remove English
+3. Export preprocessed datasets for model training
+4. Consider data balancing techniques if imbalance detected
+5. Create train/validation/test splits
+6. Build and train your ABSA models
+
+═════════════════════════════════════════════════════════════════════════════
